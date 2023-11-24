@@ -3,12 +3,25 @@ import Square from "./Square";
 
 function Board() {
   const [squares, setSquares] = useState(Array(9).fill(null));
+  //True is for X, false is for O.
+  const [turns, setTurns] = useState(true);
 
   function handleClick(i: number) {
+    if (squares[i]) {
+      return;
+    }
     const nextSquares = squares.slice();
-    nextSquares[i] = "X";
+
+    if (turns) {
+      nextSquares[i] = "X";
+    } else {
+      nextSquares[i] = "O";
+    }
+    setTurns(!turns);
+
     setSquares(nextSquares);
   }
+
   return (
     <>
       <div className="board-row">
