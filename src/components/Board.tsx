@@ -1,29 +1,19 @@
-import { useState } from "react";
 import Square from "./Square";
 
-function Board() {
-  const [squares, setSquares] = useState(Array(9).fill(null));
-  //True is for X, false is for O.
-  const [turns, setTurns] = useState(true);
-  const [counter, setCounter] = useState(0);
-  const [winner, setWinner] = useState(null);
-
+function Board({ xIsNext, squares, onPlay }) {
   function handleClick(i: number) {
-    if (squares[i] || winner) {
+    if (calculateWinner(squares) || squares[i]) {
       return;
     }
     const nextSquares = squares.slice();
-
-    if (turns) {
+    if (xIsNext) {
       nextSquares[i] = "X";
     } else {
       nextSquares[i] = "O";
     }
-    calculateWinner(nextSquares);
-    setTurns(!turns);
-    setCounter(counter + 1);
-    setSquares(nextSquares);
+    onPlay(nextSquares);
   }
+  const winner = calculateWinner(squares);
 
   function calculateWinner(squares) {
     const lines = [
@@ -43,23 +33,15 @@ function Board() {
         squares[a] === squares[b] &&
         squares[a] === squares[c]
       ) {
-        setWinner(squares[a]);
         return squares[a];
       }
     }
     return null;
   }
 
-  function clearBoard() {
-    setSquares(Array(9).fill(null));
-    setTurns(true);
-    setCounter(0);
-    setWinner(null);
-  }
-
   return (
     <>
-      <div className="turn"> Next Player: {turns ? "X" : "O"}</div>
+      <div className="turn"> Next Player: {xIsNext ? "X" : "O"}</div>
       <div className="board-row">
         <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
         <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
@@ -75,10 +57,7 @@ function Board() {
         <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
         <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
       </div>
-      <div>
-        <h1> Winner is {winner}</h1>
-        <button onClick={clearBoard}>Clear board</button>
-      </div>
+      <h1> Winner is {winner}</h1>
     </>
   );
 }
